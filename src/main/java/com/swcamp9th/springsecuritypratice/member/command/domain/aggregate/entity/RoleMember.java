@@ -22,9 +22,9 @@ public class RoleMember {
 
     @Id
     @Column(name = "member_id")
-    private int memberId;
+    private Integer memberId;
 
     @Id
     @Column(name = "role_id")
-    private int roleId;
+    private Integer roleId;
 }
