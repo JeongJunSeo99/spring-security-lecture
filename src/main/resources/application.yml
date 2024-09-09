@@ -10,9 +10,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     show-sql: true
     database: mysql
     properties:
       hibernate:
         '[format_sql]': true
+
+token:
+  expiration_time: 1800000000
+  secret: CdkKVDgED/8zH71UEu1kRNaeI9/rWJiGxiT+ht0u5QaVjOXKkx//t+hLqtTgwqEGWDuQaz07ze60vVX8LTnlKQ==
