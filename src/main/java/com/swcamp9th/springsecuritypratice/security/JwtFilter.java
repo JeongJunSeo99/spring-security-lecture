@@ -18,11 +18,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final MemberService memberService;
     private final JwtUtil jwtUtil;
 
-    public JwtFilter(MemberService memberService, JwtUtil jwtUtil) {
-        this.memberService = memberService;
+    public JwtFilter( JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
 
@@ -30,6 +28,15 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
+
+        String requestURI = request.getRequestURI();
+
+        // 만약 요청이 /token/refresh로 들어왔다면, 필터를 건너뜀
+        if (requestURI.equals("/api/users/token/refresh")) {
+            // 필터 체인의 다음 단계로 넘어가도록 설정 (필터 건너뜀)
+            filterChain.doFilter(request, response);
+            return;  // 아래 코드는 실행되지 않도록 return
+        }
 
         String authorizationHeader = request.getHeader("Authorization");
 

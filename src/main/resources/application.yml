@@ -16,7 +16,15 @@ spring:
     properties:
       hibernate:
         '[format_sql]': true
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 token:
-  expiration_time: 1800000000
+  expiration_time: 20000
+  secret: CdkKVDgED/8zH71UEu1kRNaeI9/rWJiGxiT+ht0u5QaVjOXKkx//t+hLqtTgwqEGWDuQaz07ze60vVX8LTnlKQ==
+
+refresh-token:
+  expiration_time: 1209600000
   secret: CdkKVDgED/8zH71UEu1kRNaeI9/rWJiGxiT+ht0u5QaVjOXKkx//t+hLqtTgwqEGWDuQaz07ze60vVX8LTnlKQ==

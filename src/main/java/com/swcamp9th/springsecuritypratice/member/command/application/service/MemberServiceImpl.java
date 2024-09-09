@@ -72,6 +72,11 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
+    public Member findMember(String email) {
+        return memberRepository.findByEmail(email);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         /* 설명. 넘어온 email이 사용자가 입력한 id로써 email로 회원을 조회하는 쿼리 메소드 작성 */
         Member loginUser = memberRepository.findByEmail(email);

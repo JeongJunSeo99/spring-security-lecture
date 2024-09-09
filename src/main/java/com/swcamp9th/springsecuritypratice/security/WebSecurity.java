@@ -2,6 +2,7 @@ package com.swcamp9th.springsecuritypratice.security;
 
 
 import com.swcamp9th.springsecuritypratice.member.command.application.service.MemberService;
+import com.swcamp9th.springsecuritypratice.member.command.application.service.RefreshTokenService;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -25,14 +26,16 @@ public class WebSecurity { // extends 방식은 22년부터 막힘
     private MemberService memberService;
     private Environment env;
     private JwtUtil jwtUtil;
+    private RefreshTokenService refreshTokenService;
 
     @Autowired
     public WebSecurity(BCryptPasswordEncoder bCryptPasswordEncoder, MemberService memberService,
-        Environment env, JwtUtil jwtUtil) {
+        Environment env, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.memberService = memberService;
         this.env = env;
         this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
     }
 
     /* 설명. Authoriazation(인가) 메소드 (인증 필터 추가) */
@@ -66,14 +69,14 @@ public class WebSecurity { // extends 방식은 22년부터 막힘
                 -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .addFilter(getAuthenticationFilter(authenticationManager))
-            .addFilterBefore(new JwtFilter(memberService, jwtUtil)
+            .addFilterBefore(new JwtFilter(jwtUtil)
                 , UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
     private Filter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-        return new AuthenticationFilter(authenticationManager, memberService, env);
+        return new AuthenticationFilter(authenticationManager, env, jwtUtil, refreshTokenService);
     }
 
 }

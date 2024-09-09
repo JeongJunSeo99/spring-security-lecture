@@ -3,6 +3,7 @@ package com.swcamp9th.springsecuritypratice.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swcamp9th.springsecuritypratice.member.command.application.dto.req.RequestLoginDTO;
 import com.swcamp9th.springsecuritypratice.member.command.application.service.MemberService;
+import com.swcamp9th.springsecuritypratice.member.command.application.service.RefreshTokenService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -27,16 +28,19 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private MemberService memberService;
     private Environment env;
+    private JwtUtil jwtUtil;
+    private RefreshTokenService refreshTokenService;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager
-                              , MemberService memberService
-                              , Environment environment)
+                              , Environment environment
+                              , JwtUtil jwtUtil
+                              , RefreshTokenService refreshTokenService)
     {
         super(authenticationManager);
-        this.memberService = memberService;
         this.env = environment;
+        this.jwtUtil = jwtUtil;
+        this.refreshTokenService = refreshTokenService;
     }
 
     /* 설명. 로그인 시도 시 동작하는 기능 (POST /login 요청 시) */
@@ -74,22 +78,27 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         CustomUser customUser = (CustomUser) authResult.getPrincipal();
 
-        /* 설명. 재료들로 토큰 만들기(JWT Token 라이브러리 추가(3가지) 하기 */
-        Claims claims = Jwts.claims().setSubject(customUser.getUsername());
-        
-        /* 필기. 비공개 클레임 추가하는 과정*/
-        claims.put("auth", customUser.getAuthorities().stream().map(role -> role.getAuthority())
-                                                               .collect(Collectors.toList()));
-        claims.put("email", customUser.getEmail());
-        claims.put("userUniqueId", customUser.getMemberUniqueId());
+        String accessToken = jwtUtil.generateAccessToken(customUser.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(customUser.getEmail());
 
-        String token = Jwts.builder()
-            .setClaims(claims)
-            .setExpiration(new Date(System.currentTimeMillis()
-                + Long.parseLong(env.getProperty("token.expiration_time"))))
-            .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
-            .compact();
+        log.info("로그인 시, Refresh token: " + refreshToken);
+//        /* 설명. 재료들로 토큰 만들기(JWT Token 라이브러리 추가(3가지) 하기 */
+//        Claims claims = Jwts.claims().setSubject(customUser.getUsername());
+//
+//        /* 필기. 비공개 클레임 추가하는 과정*/
+//        claims.put("auth", customUser.getAuthorities().stream().map(role -> role.getAuthority())
+//                                                               .collect(Collectors.toList()));
+//        claims.put("email", customUser.getEmail());
+//        claims.put("userUniqueId", customUser.getMemberUniqueId());
+//
+//        String token = Jwts.builder()
+//            .setClaims(claims)
+//            .setExpiration(new Date(System.currentTimeMillis()
+//                + Long.parseLong(env.getProperty("token.expiration_time"))))
+//            .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+//            .compact();
 
-        response.addHeader("token", token);
+        response.addHeader("token", accessToken);
+        refreshTokenService.saveTokenInfo(customUser.getEmail(), accessToken, refreshToken);
     }
 }
