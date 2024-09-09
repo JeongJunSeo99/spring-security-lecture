@@ -50,7 +50,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
     @Transactional
     public String refreshRefreshToken(String accessToken) {
         accessToken = accessToken.replace("Bearer ", "");
-        String email = jwtUtil.parseClaims(accessToken).get("email", String.class);
+        String email = jwtUtil.getEmail(accessToken);
         log.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : " + email);
 
 //        RefreshToken refreshToken = refreshTokenRepository.findByAccessToken(accessToken).orElseThrow();

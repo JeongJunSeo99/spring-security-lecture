@@ -105,7 +105,7 @@ public class JwtUtil {
     private String getUserId(String token) {
         return parseClaims(token).getSubject();
     }
-    private String getEmail(String token) {
+    public String getEmail(String token) {
         return parseClaims(token).get("email", String.class);
     }
 
