@@ -75,6 +75,16 @@ public class JwtUtil {
 
         return true;
     }
+
+    // AccessToken 만료 여부 확인
+    public boolean isTokenExpired(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody();
+            return claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return true;  // 유효하지 않은 토큰이거나 만료된 토큰일 경우
+        }
+    }
     
     /* 설명. 넘어 온 AcessToken으로 인증 객체 추출 */
     public Authentication getAuthentication(String token) {

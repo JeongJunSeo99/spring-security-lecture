@@ -1,12 +1,14 @@
-package com.swcamp9th.springsecuritypratice.security;
+package com.swcamp9th.springsecuritypratice.security.filter;
 
-import com.swcamp9th.springsecuritypratice.member.command.application.service.MemberService;
+import com.swcamp9th.springsecuritypratice.member.command.application.service.RefreshTokenService;
+import com.swcamp9th.springsecuritypratice.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,15 +30,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
-
-        String requestURI = request.getRequestURI();
-
-        // 만약 요청이 /token/refresh로 들어왔다면, 필터를 건너뜀
-        if (requestURI.equals("/api/users/token/refresh")) {
-            // 필터 체인의 다음 단계로 넘어가도록 설정 (필터 건너뜀)
-            filterChain.doFilter(request, response);
-            return;  // 아래 코드는 실행되지 않도록 return
-        }
 
         String authorizationHeader = request.getHeader("Authorization");
 

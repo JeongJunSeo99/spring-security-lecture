@@ -3,6 +3,9 @@ package com.swcamp9th.springsecuritypratice.security;
 
 import com.swcamp9th.springsecuritypratice.member.command.application.service.MemberService;
 import com.swcamp9th.springsecuritypratice.member.command.application.service.RefreshTokenService;
+import com.swcamp9th.springsecuritypratice.security.filter.AuthenticationFilter;
+import com.swcamp9th.springsecuritypratice.security.filter.JwtFilter;
+import com.swcamp9th.springsecuritypratice.security.filter.RefreshFilter;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -69,9 +72,8 @@ public class WebSecurity { // extends 방식은 22년부터 막힘
                 -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
             .addFilter(getAuthenticationFilter(authenticationManager))
-            .addFilterBefore(new JwtFilter(jwtUtil)
-                , UsernamePasswordAuthenticationFilter.class);
-
+            .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new RefreshFilter(jwtUtil, refreshTokenService), JwtFilter.class);
         return http.build();
     }
 

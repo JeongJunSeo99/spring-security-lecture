@@ -1,28 +1,22 @@
-package com.swcamp9th.springsecuritypratice.security;
+package com.swcamp9th.springsecuritypratice.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swcamp9th.springsecuritypratice.member.command.application.dto.req.RequestLoginDTO;
-import com.swcamp9th.springsecuritypratice.member.command.application.service.MemberService;
 import com.swcamp9th.springsecuritypratice.member.command.application.service.RefreshTokenService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.swcamp9th.springsecuritypratice.security.CustomUser;
+import com.swcamp9th.springsecuritypratice.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Slf4j
