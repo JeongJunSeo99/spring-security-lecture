@@ -7,6 +7,7 @@ import com.swcamp9th.springsecuritypratice.member.command.application.service.Re
 import com.swcamp9th.springsecuritypratice.member.command.domain.aggregate.entity.RefreshToken;
 import com.swcamp9th.springsecuritypratice.member.command.domain.repository.RefreshTokenRepository;
 import com.swcamp9th.springsecuritypratice.security.JwtUtil;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +71,7 @@ public class MemberController {
     @PostMapping("/token/refresh")
     public ResponseEntity<ResponseMessage> refresh(@RequestHeader("Authorization") final String accessToken) {
 
-        String newAccessToken = tokenService.refreshRefreshToken(accessToken);
+        List<String> tokens = tokenService.refreshRefreshToken(accessToken);
 
         return ResponseEntity
             .ok()
@@ -78,7 +79,7 @@ public class MemberController {
                 ResponseMessage.builder()
                     .httpStatus(HttpStatus.CREATED.value())
                     .message("access token 재발급")
-                    .result(newAccessToken)
+                    .result(tokens)
                     .build()
             );
     }

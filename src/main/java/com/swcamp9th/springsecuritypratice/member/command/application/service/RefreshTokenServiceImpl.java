@@ -2,8 +2,9 @@ package com.swcamp9th.springsecuritypratice.member.command.application.service;
 
 import com.swcamp9th.springsecuritypratice.member.command.domain.aggregate.entity.RefreshToken;
 import com.swcamp9th.springsecuritypratice.member.command.domain.repository.RefreshTokenRepository;
-import com.swcamp9th.springsecuritypratice.member.command.domain.repository.RefreshTokenRepositoryCustom;
 import com.swcamp9th.springsecuritypratice.security.JwtUtil;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +19,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
-    private final RefreshTokenRepositoryCustom refreshTokenRepositoryCustom;
 
     @Autowired
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil
-                                 , RefreshTokenRepositoryCustom refreshTokenRepositoryCustom) {
+    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil) {
         this.refreshTokenRepository = refreshTokenRepository;
         this.jwtUtil = jwtUtil;
-        this.refreshTokenRepositoryCustom = refreshTokenRepositoryCustom;
     }
 
     @Override
@@ -49,14 +47,17 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
     @Override
     @Transactional
-    public String refreshRefreshToken(String accessToken) {
-        accessToken = accessToken.replace("Bearer ", "");
-        log.info("access token입니다" + accessToken);
+    public List<String> refreshRefreshToken(String token) {
+        token = token.replace("Bearer ", "");
+        String email = jwtUtil.getEmail(token);
+        log.info("access token입니다" + token);
 
-        RefreshToken refreshToken = refreshTokenRepositoryCustom.findByAccessToken(accessToken);
-//        RefreshToken refreshToken = refreshTokenRepository.findById(email).orElseThrow();
+//        RefreshToken refreshToken = refreshTokenRepositoryCustom.findByAccessToken(accessToken);
+        RefreshToken refreshToken = refreshTokenRepository.findById(email).orElseThrow();
         log.info("Refresh token: {}", refreshToken);
         String newAccessToken = null;
+        String newRefreshToken = null;
+        List<String> tokens = new ArrayList<>();
 
         // RefreshToken이 존재하고 유효하다면 실행
         if (refreshToken != null && jwtUtil.validateToken(refreshToken.getRefreshToken())) {
@@ -66,8 +67,10 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
             // 권한과 아이디를 추출해 새로운 액세스토큰을 만든다.
             newAccessToken = jwtUtil.generateAccessToken(resultToken.getId());
-            String newRefreshToken = jwtUtil.generateRefreshToken(resultToken.getId());
-            log.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + newAccessToken);
+            newRefreshToken = jwtUtil.generateRefreshToken(resultToken.getId());
+            tokens.add(newAccessToken);
+            tokens.add(newRefreshToken);
+
             // 액세스 토큰의 값을 수정해준다.
             resultToken.updateAccessToken(newAccessToken);
             resultToken.updateRefreshToken(newRefreshToken);
@@ -75,6 +78,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 
         }
 
-        return newAccessToken;
+        log.info("리프레시 토큰 서비스 실행 후 tokens 값 : " + tokens.get(0) + " / " + tokens.get(1));
+
+        return tokens;
     }
 }

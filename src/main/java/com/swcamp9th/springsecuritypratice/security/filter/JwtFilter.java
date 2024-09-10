@@ -31,11 +31,13 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException {
 
-        String authorizationHeader = request.getHeader("Authorization");
+        String authorizationHeader = request.getHeader("accessToken");
 
         /* 설명. JWT 토큰이 Request Header에 있는 경우 */
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
+
+            log.info("jwt필터에서 파싱한 accessToken 값 " + token);
 
             if(jwtUtil.validateToken(token)){
                 Authentication authentication = jwtUtil.getAuthentication(token);

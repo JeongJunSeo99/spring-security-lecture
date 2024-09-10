@@ -92,7 +92,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 //            .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
 //            .compact();
 
-        response.addHeader("token", accessToken);
+        response.addHeader("accessToken", accessToken);
+        response.addHeader("refreshToken", refreshToken);
         refreshTokenService.saveTokenInfo(customUser.getEmail(), accessToken, refreshToken);
     }
 }
