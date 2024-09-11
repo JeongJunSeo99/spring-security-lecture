@@ -1,7 +1,7 @@
 package com.swcamp9th.springsecuritypratice.security.filter;
 
 import com.swcamp9th.springsecuritypratice.member.command.application.service.RefreshTokenService;
-import com.swcamp9th.springsecuritypratice.security.CustomHeaderRequestWrapper;
+import com.swcamp9th.springsecuritypratice.common.CustomHeaderRequestWrapper;
 import com.swcamp9th.springsecuritypratice.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Slf4j

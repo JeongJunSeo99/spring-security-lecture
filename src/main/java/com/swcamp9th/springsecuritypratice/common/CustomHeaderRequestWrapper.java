@@ -1,4 +1,4 @@
-package com.swcamp9th.springsecuritypratice.security;
+package com.swcamp9th.springsecuritypratice.common;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
