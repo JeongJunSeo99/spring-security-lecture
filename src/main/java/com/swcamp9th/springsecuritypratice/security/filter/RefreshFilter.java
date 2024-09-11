@@ -1,6 +1,7 @@
 package com.swcamp9th.springsecuritypratice.security.filter;
 
 import com.swcamp9th.springsecuritypratice.member.command.application.service.RefreshTokenService;
+import com.swcamp9th.springsecuritypratice.security.CustomHeaderRequestWrapper;
 import com.swcamp9th.springsecuritypratice.security.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,6 +28,7 @@ public class RefreshFilter  extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
 
         String authorizationHeader = request.getHeader("accessToken");
+        CustomHeaderRequestWrapper wrappedRequest = new CustomHeaderRequestWrapper(request);
 
         /* 설명. JWT 토큰이 Request Header에 있는 경우 */
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -40,18 +42,20 @@ public class RefreshFilter  extends OncePerRequestFilter {
                 if (tokens != null && !tokens.isEmpty()) {
 
                     // Request와 Response Header에 새로운 AccessToken 추가
-                    request.setAttribute("accessToken", "Bearer " + tokens.get(0));
-                    request.setAttribute("refreshToken", "Bearer " + tokens.get(1));
+                    wrappedRequest.addHeader("accessToken", "Bearer " + tokens.get(0));
+                    wrappedRequest.addHeader("refreshToken", "Bearer " + tokens.get(1));
 
                     log.info("리프레쉬 필터에서 새롭게 정의된 accessToken 값 : " + tokens.get(0));
                     log.info("리프레쉬 필터에서 새롭게 정의된 refreshToken 값 : " + tokens.get(1));
 
                     response.setHeader("accessToken", tokens.get(0));
                     response.setHeader("refreshToken", tokens.get(1));
+                    
+                    log.info("req, res 갈아끼워짐");
                 }
             }
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(wrappedRequest, response);
     }
 }
