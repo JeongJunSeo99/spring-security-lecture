@@ -27,16 +27,14 @@ public class WebSecurity { // extends 방식은 22년부터 막힘
 
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private MemberService memberService;
-    private Environment env;
     private JwtUtil jwtUtil;
     private RefreshTokenService refreshTokenService;
 
     @Autowired
     public WebSecurity(BCryptPasswordEncoder bCryptPasswordEncoder, MemberService memberService,
-        Environment env, JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
+        JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.memberService = memberService;
-        this.env = env;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService;
     }
@@ -78,7 +76,7 @@ public class WebSecurity { // extends 방식은 22년부터 막힘
     }
 
     private Filter getAuthenticationFilter(AuthenticationManager authenticationManager) {
-        return new AuthenticationFilter(authenticationManager, env, jwtUtil, refreshTokenService);
+        return new AuthenticationFilter(authenticationManager, jwtUtil, refreshTokenService);
     }
 
 }

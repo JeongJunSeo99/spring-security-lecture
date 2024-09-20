@@ -32,23 +32,17 @@ public class RefreshFilter  extends OncePerRequestFilter {
         /* 설명. JWT 토큰이 Request Header에 있는 경우 */
         if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             String token = authorizationHeader.substring(7);
-            String refreshToken = request.getHeader("refreshToken").substring(7);
 
             if (jwtUtil.isTokenExpired(token)) {
                 log.info("리프레쉬 토큰 호출되는중입니다아아아아아아아");
-                List<String> tokens = refreshTokenService.refreshRefreshToken(refreshToken);
+                String newAccesstoken = refreshTokenService.refreshRefreshToken(token);
 
-                if (tokens != null && !tokens.isEmpty()) {
+                if (newAccesstoken != null) {
 
                     // Request와 Response Header에 새로운 AccessToken 추가
-                    wrappedRequest.addHeader("accessToken", "Bearer " + tokens.get(0));
-                    wrappedRequest.addHeader("refreshToken", "Bearer " + tokens.get(1));
+                    wrappedRequest.addHeader("accessToken", "Bearer " + newAccesstoken);
 
-                    log.info("리프레쉬 필터에서 새롭게 정의된 accessToken 값 : " + tokens.get(0));
-                    log.info("리프레쉬 필터에서 새롭게 정의된 refreshToken 값 : " + tokens.get(1));
-
-                    response.setHeader("accessToken", tokens.get(0));
-                    response.setHeader("refreshToken", tokens.get(1));
+                    response.setHeader("accessToken", newAccesstoken);
                     
                     log.info("req, res 갈아끼워짐");
                 }

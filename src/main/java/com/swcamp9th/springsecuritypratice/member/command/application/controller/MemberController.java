@@ -71,7 +71,7 @@ public class MemberController {
     @PostMapping("/token/refresh")
     public ResponseEntity<ResponseMessage> refresh(@RequestHeader("Authorization") final String accessToken) {
 
-        List<String> tokens = tokenService.refreshRefreshToken(accessToken);
+        String newAccessToken = tokenService.refreshRefreshToken(accessToken);
 
         return ResponseEntity
             .ok()
@@ -79,7 +79,7 @@ public class MemberController {
                 ResponseMessage.builder()
                     .httpStatus(HttpStatus.CREATED.value())
                     .message("access token 재발급")
-                    .result(tokens)
+                    .result(newAccessToken)
                     .build()
             );
     }
