@@ -85,14 +85,15 @@ public class MemberController {
     }
 
     @GetMapping("/test")
-    public ResponseEntity<ResponseMessage> test(){
+    public ResponseEntity<ResponseMessage> test(@RequestHeader("accessToken") final String accessToken){
+
         return ResponseEntity
             .ok()
             .body(
                 ResponseMessage.builder()
                     .httpStatus(HttpStatus.CREATED.value())
                     .message("테스트")
-                    .result(null)
+                    .result(accessToken)
                     .build()
             );
     }
