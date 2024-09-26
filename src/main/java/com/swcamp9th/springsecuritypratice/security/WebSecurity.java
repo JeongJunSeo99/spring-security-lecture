@@ -6,11 +6,13 @@ import com.swcamp9th.springsecuritypratice.member.command.application.service.Re
 import com.swcamp9th.springsecuritypratice.security.filter.AuthenticationFilter;
 import com.swcamp9th.springsecuritypratice.security.filter.JwtFilter;
 import com.swcamp9th.springsecuritypratice.security.filter.RefreshFilter;
+import com.swcamp9th.springsecuritypratice.security.oauth2.handler.OAuth2LoginFailureHandler;
+import com.swcamp9th.springsecuritypratice.security.oauth2.handler.OAuth2LoginSuccessHandler;
+import com.swcamp9th.springsecuritypratice.security.oauth2.service.CustomOAuth2UserService;
 import jakarta.servlet.Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,14 +31,23 @@ public class WebSecurity { // extends 방식은 22년부터 막힘
     private MemberService memberService;
     private JwtUtil jwtUtil;
     private RefreshTokenService refreshTokenService;
+    private OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+    private OAuth2LoginFailureHandler oAuth2LoginFailureHandler;
+    private CustomOAuth2UserService customOAuth2UserService;
 
     @Autowired
     public WebSecurity(BCryptPasswordEncoder bCryptPasswordEncoder, MemberService memberService,
-        JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
+        JwtUtil jwtUtil, RefreshTokenService refreshTokenService,
+        OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler,
+        OAuth2LoginFailureHandler oAuth2LoginFailureHandler,
+        CustomOAuth2UserService customOAuth2UserService) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.memberService = memberService;
         this.jwtUtil = jwtUtil;
         this.refreshTokenService = refreshTokenService;
+        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
+        this.oAuth2LoginFailureHandler = oAuth2LoginFailureHandler;
+        this.customOAuth2UserService = customOAuth2UserService;
     }
 
     /* 설명. Authoriazation(인가) 메소드 (인증 필터 추가) */
@@ -68,6 +79,12 @@ public class WebSecurity { // extends 방식은 22년부터 막힘
              /* 설명. session 방식을 사용하지 않음 (JWT Token 방식 사용 시 설정할 내용) */
              .sessionManagement((session)
                 -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            .oauth2Login(oauth2 -> oauth2
+                .successHandler(oAuth2LoginSuccessHandler)
+                .failureHandler(oAuth2LoginFailureHandler)
+//                .userInfoEndpoint().userService(customOAuth2UserService)
+            )
 
             .addFilter(getAuthenticationFilter(authenticationManager))
             .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)

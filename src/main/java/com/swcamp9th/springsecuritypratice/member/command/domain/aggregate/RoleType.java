@@ -2,7 +2,8 @@ package com.swcamp9th.springsecuritypratice.member.command.domain.aggregate;
 
 public enum RoleType {
     ADMIN("ROLE_ADMIN", 1)
-    , USER("ROLE_USER", 2);
+    , USER("ROLE_USER", 2)
+    , GUEST("ROLE_GUEST", 3);
 
     private final String type;
     private final Integer roleId;
