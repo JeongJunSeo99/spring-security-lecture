@@ -40,11 +40,14 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                     HttpSession session = request.getSession();
                     session.setAttribute("tempEmail", oAuth2User.getEmail());
 
+                    // redirect 후 프론트에서 oauth 추가 회원가입 api 작성
+                    // -> 쿠키로 email값(임시) 전달해줘야 하고, 그걸로 이후 이미 생성된 user 조회해서 db 업데이트 후 token res
                     String redirectUrl = "http://localhost:5173/signup";
                     response.sendRedirect(redirectUrl);
                 } else {
                     loginSuccess(response, oAuth2User);
-                    // 로그인 성공 후 프론트엔드의 메인 페이지로 리다이렉트
+
+                    // 리다이렉트 시, accesstoken을 추가하는 방법 (쿠키로 해야 할 듯 -> 수업자료 확인 후 token 생성해서 넣어주자)
                     response.sendRedirect("http://localhost:5173/main");
 
                 }
