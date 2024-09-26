@@ -134,7 +134,8 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         Member createdMember = attributes.toEntity(socialType, attributes.getOauth2UserInfo());
 
         log.info("멤버 이메일" + createdMember.getEmail());
-        log.info("멤버어" + createdMember.getSocialType());
+        log.info("멤버 이미지" + createdMember.getImageUrl());
+        log.info("멤버 닉네임" + createdMember.getNickname());
         Member registMember = memberRepository.save(createdMember);
 
         // 회원 권한 부여

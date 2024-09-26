@@ -35,7 +35,7 @@ public class MemberController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/sign-up")
+    @PostMapping("/signup")
     public ResponseEntity<ResponseMessage> registUser(@RequestBody ReqSignupDTO newUser){
 
         memberService.registMember(newUser);

@@ -7,6 +7,9 @@ import com.swcamp9th.springsecuritypratice.security.oauth2.CustomOAuth2User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -27,23 +30,23 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         log.info("OAuth2 Login 성공!");
         try {
+            // CustomOAuth2UserService의 loadUser에서 생성한 객체 반환
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
             // User의 Role이 GUEST일 경우 처음 요청한 회원이므로 회원가입 페이지로 리다이렉트
-            for( RoleType role : oAuth2User.getRole()){
-                if(role == RoleType.GUEST) {
-                    log.info("리다이렉트 url response");
-                    response.sendRedirect("/login"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
-
-//                    String accessToken = jwtUtil.createAccessToken(oAuth2User.getEmail());
-//                    response.addHeader(jwtUtil.getAccessHeader(), "Bearer " + accessToken);
 //
-//                    jwtUtil.sendAccessAndRefreshToken(response, accessToken, null);
-//                User findUser = userRepository.findByEmail(oAuth2User.getEmail())
-//                                .orElseThrow(() -> new IllegalArgumentException("이메일에 해당하는 유저가 없습니다."));
-//                findUser.authorizeUser();
+            for (RoleType role : oAuth2User.getRole()) {
+                if (role == RoleType.GUEST) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("tempEmail", oAuth2User.getEmail());
+
+                    String redirectUrl = "http://localhost:5173/signup";
+                    response.sendRedirect(redirectUrl);
                 } else {
-                    loginSuccess(response, oAuth2User); // 로그인에 성공한 경우 access, refresh 토큰 생성
+                    loginSuccess(response, oAuth2User);
+                    // 로그인 성공 후 프론트엔드의 메인 페이지로 리다이렉트
+                    response.sendRedirect("http://localhost:5173/main");
+
                 }
             }
 
