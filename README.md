@@ -41,9 +41,9 @@
 - 자동 로그인 시나리오
 1. 클라이언트에는 Access Token이 있고, Redis에 Access Token과 Refresh Token 쌍이 저장되어 있음 
 2. RefreshFilter에서 들고 온 Access Token 만료 여부 확인
-  - 만료 시, Redis에 저장된 Refresh Token을 Access Token으로 조회 후 
-    <br>
-    (Access Token 재발급 && Request Header의 Access Token 갈아끼우기 && Response Header에 Access Token 추가 && Redis에 Access Token 업데이트
-  - 만료가 아니라면 3번으로
+    - 만료 시, Redis에 저장된 Refresh Token을 Access Token으로 조회 후 
+      <br>
+      (Access Token 재발급 && Request Header의 Access Token 갈아끼우기 && Response Header에 Access Token 추가 && Redis에 Access Token 업데이트
+    -  만료가 아니라면 3번으로
 3. JwtFilter에서 Access Token의 유효성 검사 진행
 4. 서비스 이용
